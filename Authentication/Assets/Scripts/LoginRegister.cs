@@ -62,14 +62,14 @@ public class LoginRegister : MonoBehaviour
         };
 
         PlayFabClientAPI.LoginWithPlayFab(loginRequest,
-            result => 
+            result =>
             {
                 displayText.gameObject.SetActive(true);
-                SetDisplayText("Logged in as: " + result.PlayFabId, Color.green);
+                Debug.Log("Logged in as: " + result.PlayFabId);
 
                 playFabId = result.PlayFabId;
 
-                if(onLoggedIn != null)
+                if (onLoggedIn != null)
                 {
                     onLoggedIn.Invoke();
                 }

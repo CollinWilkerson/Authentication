@@ -97,21 +97,50 @@ public class Leaderboard : MonoBehaviour
             // 4. Select the API Features tab.
             // 5. Find and activate Allow client to post player statistics.
             // (source:https://learn.microsoft.com/en-us/gaming/playfab/features/data/playerdata/using-player - statistics)
-            PlayFabClientAPI.GetPlayerStatistics(new GetPlayerStatisticsRequest()
-            ), result ;
-            //call and create in the same line
-            PlayFabClientAPI.UpdatePlayerStatistics(new UpdatePlayerStatisticsRequest
+
+            bool hasFastest = false;
+            //this should prevent overwriting times with worse time 
+            PlayFabClientAPI.GetPlayerStatistics(new GetPlayerStatisticsRequest(),
+                result =>
+                {
+                    foreach (var eachStat in result.Statistics)
+                    {
+                        if (eachStat.StatisticName == "FastestTime")
+                        {
+                            hasFastest = true;
+                            Debug.Log("old: " + eachStat.Value + "\nNew: " + newScore);
+                            Debug.Log("Mark 2: " + hasFastest);
+                            if (eachStat.Value < newScore) //this one is fine, it's the other that sucks
+                            {
+                                Debug.Log("update");
+                                UpdatePlayerStatisics(newScore);
+                            }
+                        }
+                    }
+                    if (!hasFastest)
+                    {
+                        Debug.Log("initialize");
+                        UpdatePlayerStatisics(newScore);
+                    }
+                },
+                error => { Debug.Log(error.ErrorMessage); }
+            );
+        }
+    }
+
+    private void UpdatePlayerStatisics(int newScore)
+    {
+        PlayFabClientAPI.UpdatePlayerStatistics(new UpdatePlayerStatisticsRequest
             {
                 // request.Statistics is a list, so multiple StatisticUpdate objects can be defined if required.
                 // probably for adjusting players that move on the statistics
                 Statistics = new List<StatisticUpdate>
-                {
-                    new StatisticUpdate { StatisticName = "FastestTime", Value = newScore },
-                }
+                    {
+                        new StatisticUpdate { StatisticName = "FastestTime", Value = newScore },
+                    }
             },
             result => { Debug.Log("User statistics updated"); },
             error => { Debug.LogError(error.GenerateErrorReport()); }
-            );
-        }
+        );
     }
 }
