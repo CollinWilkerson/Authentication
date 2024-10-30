@@ -97,7 +97,8 @@ public class Leaderboard : MonoBehaviour
             // 4. Select the API Features tab.
             // 5. Find and activate Allow client to post player statistics.
             // (source:https://learn.microsoft.com/en-us/gaming/playfab/features/data/playerdata/using-player - statistics)
-
+            PlayFabClientAPI.GetPlayerStatistics(new GetPlayerStatisticsRequest()
+            ), result ;
             //call and create in the same line
             PlayFabClientAPI.UpdatePlayerStatistics(new UpdatePlayerStatisticsRequest
             {
