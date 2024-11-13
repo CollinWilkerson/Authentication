@@ -54,7 +54,7 @@ public class Leaderboard : MonoBehaviour
                 (leaderboard[x].Position + 1) + ". " + leaderboard[x].DisplayName;
             //adjusts the players time
             leaderboardEntries[x].transform.Find("Score").GetComponent<TextMeshProUGUI>().text =
-                ((float)leaderboard[x].StatValue).ToString("F2");
+                ((float)leaderboard[x].StatValue).ToString();
         }
     }
 

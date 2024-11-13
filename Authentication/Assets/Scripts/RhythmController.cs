@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RhythmController : MonoBehaviour
@@ -15,6 +16,7 @@ public class RhythmController : MonoBehaviour
     private float score = 0;
 
     private bool isPlaying = false;
+    private bool hitIsBuffered = false;
 
     private void Awake()
     {
@@ -36,7 +38,7 @@ public class RhythmController : MonoBehaviour
         {
             //Debug.Log("Time between beats: " + (Time.time - beatTime));
             //I should modify this to be the nearest beat lest we get off time
-            beatTime += 0.33f;
+            beatTime += 60 / bpm;
             beat++;
             //Debug.Log("Beat " + beat);
             
@@ -57,7 +59,7 @@ public class RhythmController : MonoBehaviour
         Debug.Log("action: " + action);
 
         //time the players press with the time of the song
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if (Input.GetKeyDown(KeyCode.Space) && !hitIsBuffered) {
             if (action == ' ')
             {
                 //score is the difference in time from the start of the beat
@@ -77,10 +79,29 @@ public class RhythmController : MonoBehaviour
                     audioSource.PlayOneShot(songData.miss);
                 }
             }
+            else if(songData.beatSheet[beat + 1] == ' ')
+            {
+                float scoreChange = (Time.time - beatTime) * 300;
+                score += scoreChange;
+                Debug.Log("Hit: " + score);
+                if (scoreChange > 50)
+                {
+                    audioSource.PlayOneShot(songData.perfect);
+                }
+                else if (scoreChange > 25)
+                {
+                    audioSource.PlayOneShot(songData.good);
+                }
+                else
+                {
+                    audioSource.PlayOneShot(songData.miss);
+                }
+            }
             else
             {
                 audioSource.PlayOneShot(songData.miss);
             }
+            StartCoroutine(HitBuffer());
         }
         //play an animation based on wether or not the input was good
     }
@@ -95,5 +116,12 @@ public class RhythmController : MonoBehaviour
         beatTime = Time.time;
         isPlaying = true;
         audioSource.PlayOneShot(songData.song);
+    }
+
+    private IEnumerator HitBuffer()
+    {
+        hitIsBuffered = true;
+        yield return new WaitForSeconds(0.33f);
+        hitIsBuffered = false;
     }
 }
