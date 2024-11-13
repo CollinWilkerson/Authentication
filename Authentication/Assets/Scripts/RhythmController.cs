@@ -7,7 +7,7 @@ using UnityEngine;
 public class RhythmController : MonoBehaviour
 { 
     private AudioSource audioSource;
-    private float bpm = 180;
+    private float bpm = 182;
     private int beat = 0;
     private float beatTime = 0;
     private char action = '*';
@@ -40,7 +40,7 @@ public class RhythmController : MonoBehaviour
             //I should modify this to be the nearest beat lest we get off time
             beatTime += 60 / bpm;
             beat++;
-            //Debug.Log("Beat " + beat);
+            Debug.Log("adding " + 60/bpm);
             
         }
         //read a string that contains whether the user should take no action or press a button
