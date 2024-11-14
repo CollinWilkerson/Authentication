@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Video;
+using TMPro;
 
 public class RhythmController : MonoBehaviour
 { 
@@ -12,6 +14,8 @@ public class RhythmController : MonoBehaviour
     private float beatTime = 0;
     private char action = '*';
     private SongData songData;
+    private VideoPlayer videoPlayer;
+    public TextMeshProUGUI scoreText;
 
     private float score = 0;
 
@@ -20,6 +24,7 @@ public class RhythmController : MonoBehaviour
 
     private void Awake()
     {
+        videoPlayer = FindFirstObjectByType<VideoPlayer>();
         audioSource = GetComponent<AudioSource>();
         songData = GetComponent<SongData>();
         bpm = songData.bpm;
@@ -51,6 +56,7 @@ public class RhythmController : MonoBehaviour
         catch (Exception e){
             //the only exception is index out of bounds which means the song is over
             isPlaying = false;
+            videoPlayer.Stop();
             beat = 0;
             Leaderboard.instance.SetLeaderboardEntry((int) score);
             Leaderboard.instance.DisplayLeaderboard();
@@ -66,6 +72,7 @@ public class RhythmController : MonoBehaviour
                 float scoreChange = 100 - ((Time.time - beatTime) * 300);
                 score += scoreChange;
                 Debug.Log("Hit: " + score);
+                scoreText.text = ((int) score).ToString();
                 if(scoreChange > 50)
                 {
                     audioSource.PlayOneShot(songData.perfect);
@@ -84,6 +91,7 @@ public class RhythmController : MonoBehaviour
                 float scoreChange = (Time.time - beatTime) * 300;
                 score += scoreChange;
                 Debug.Log("Hit: " + score);
+                scoreText.text = ((int)score).ToString();
                 if (scoreChange > 50)
                 {
                     audioSource.PlayOneShot(songData.perfect);
@@ -115,6 +123,7 @@ public class RhythmController : MonoBehaviour
         }
         beatTime = Time.time;
         isPlaying = true;
+        videoPlayer.Play();
         audioSource.PlayOneShot(songData.song);
     }
 
@@ -124,4 +133,5 @@ public class RhythmController : MonoBehaviour
         yield return new WaitForSeconds(0.33f);
         hitIsBuffered = false;
     }
+    
 }
